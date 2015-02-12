@@ -1,12 +1,4 @@
-// 121.254.177.105
-// tcpdump -n icmp and icmp[icmptype] != icmp-echo or icmp[icmptype] != icmp-echoreply
-//
-// CAP_NET_RAW
-//
-// http://blog.daum.net/wonho777/5320889
-// http://kldp.org/node/35797
-// https://groups.google.com/forum/#!searchin/golang-nuts/ping/golang-nuts/yyXqNGIcMzA/mmZ_vQKun9UJ
-
+// MUST RUN AS ROOT
 package main
 
 import (
@@ -66,15 +58,15 @@ func parsePingReply(p []byte) (id, seq int) {
 }
 
 func elapsedTime(start time.Time) float32 {
-    t := float32(time.Since(start).Nanoseconds()) / 1000000
-    return t
+	t := float32(time.Since(start).Nanoseconds()) / 1000000
+	return t
 }
 
 func main() {
 	flag.Parse()
 	dst := os.Args[1]
 
-	raddr, err := net.ResolveIPAddr("ip4", dst) // *IPAddr
+	raddr, err := net.ResolveIPAddr("ip4:icmp", dst) // *IPAddr
 	if err != nil {
 		log.Fatalf(`net.ResolveIPAddr("ip4", %v") = %v, %v`, dst, raddr, err)
 	}
@@ -91,7 +83,7 @@ func main() {
 	for {
 		sendpkt := makePingRequest(sendid, sendseq, pingpktlen, []byte("Go Ping"))
 
-		//fmt.Printf("%v, %v\n", sendpkt[0:8], string(sendpkt[8:]))
+		fmt.Printf("%v\n", sendpkt[0:8])
 
 		start := time.Now()
 
